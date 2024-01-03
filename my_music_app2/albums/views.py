@@ -1,7 +1,9 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views.generic import DetailView, CreateView
 
 from my_music_app2.albums.models import Album
+from my_music_app2.users.models import Profile
 
 
 # Create your views here.
@@ -18,6 +20,7 @@ class AddAlbum(CreateView):
     fields = ["album_name", "artist", "genre", "description", "image_url", "price"]
 
     template_name = "album/album-add.html"
+    success_url = reverse_lazy("homepage")
 
     labels = {
         "album_name": "Album Name",
@@ -42,5 +45,8 @@ class AddAlbum(CreateView):
             form.fields[field_name].label = label
         return form
 
+    def form_valid(self, form):
+        form.instance.owner = Profile.objects.first()
+        return super().form_valid(form)
 
 
